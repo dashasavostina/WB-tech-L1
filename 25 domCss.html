@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Создание и стилизация элемента</title>
+</head>
+<body>
+  <div id="container"></div>
+  <script>
+    function createAndStyleElement() {
+        // создаем элемент div и прописываем ему стили, меняя свойства объекта стилей style
+      const newElement = document.createElement('div');
+      newElement.style.width = '100px';
+      newElement.style.height = '100px';
+      newElement.style.backgroundColor = 'blue';
+      newElement.style.color = 'white';
+      newElement.style.textAlign = 'center';
+      newElement.style.lineHeight = '100px';
+      newElement.textContent = 'Новый элемент';
+// помещаем наш элемент в контейнер
+      const parentElement = document.getElementById('container');
+      parentElement.appendChild(newElement);
+    }
+
+    createAndStyleElement();
+  </script>
+</body>
+</html>

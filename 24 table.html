@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Таблица данных</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 8px;
+      text-align: left;
+    }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    .pagination button {
+      margin: 5px;
+    }
+    .sort-button {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <table>
+    <thead>
+      <tr>
+        <th onclick="sortTable(0)">
+          First Name
+          <button class="sort-button" data-column="0" data-asc="true">▲</button>
+        </th>
+        <th onclick="sortTable(1)">
+          Last Name
+          <button class="sort-button" data-column="1" data-asc="true">▲</button>
+        </th>
+        <th onclick="sortTable(2)">
+          Phone
+          <button class="sort-button" data-column="2" data-asc="true">▲</button>
+        </th>
+        <th onclick="sortTable(3)">
+          Address
+          <button class="sort-button" data-column="3" data-asc="true">▲</button>
+        </th>
+        <th onclick="sortTable(4)">
+          City
+          <button class="sort-button" data-column="4" data-asc="true">▲</button>
+        </th>
+        <th onclick="sortTable(5)">
+          State
+          <button class="sort-button" data-column="5" data-asc="true">▲</button>
+        </th>
+        <th onclick="sortTable(6)">
+          Zip
+          <button class="sort-button" data-column="6" data-asc="true">▲</button>
+        </th>
+      </tr>
+    </thead>
+    <tbody id="dataTable"></tbody>
+  </table>
+  <div class="pagination">
+    <button onclick="previousPage()">Предыдущая страница</button>
+    <button onclick="nextPage()">Следующая страница</button>
+  </div>
+
+  <script>
+    const URL = 'http://www.filltext.com/?rows=1000&fname=%7BfirstName%7D&lname=%7BlastName%7D&tel=%7Bphone%7Cformat%7D&address=%7BstreetAddress%7D&city=%7Bcity%7D&state=%7BusState%7Cabbr%7D&zip=%7Bzip%7D&pretty=true';
+    const dataTable = document.getElementById('dataTable');
+    const itemsPerPage = 50;
+    let data = [];
+    let currentPage = 1;
+
+     // Функция загрузки данных
+    async function loadData() {
+      try {
+        const response = await fetch(URL);
+        data = await response.json();
+        displayPage(currentPage);
+      } catch (error) {
+        console.error('Error loading data:', error);
+      }
+    }
+
+    // Функция отображения данных на странице
+    function displayPage(page) {
+      const start = (page - 1) * itemsPerPage;
+      const end = start + itemsPerPage;
+      const pageData = data.slice(start, end);
+      displayData(pageData);
+    }
+
+    // Функция отображения данных в таблице
+    function displayData(data) {
+      dataTable.innerHTML = '';
+      data.forEach(row => {
+        const rowElement = document.createElement('tr');
+        rowElement.innerHTML = `
+          <td>${row.fname}</td>
+          <td>${row.lname}</td>
+          <td>${row.tel}</td>
+          <td>${row.address}</td>
+          <td>${row.city}</td>
+          <td>${row.state}</td>
+          <td>${row.zip}</td>
+        `;
+        dataTable.appendChild(rowElement);
+      });
+    }
+
+    // Функция перехода к следующей странице
+    function nextPage() {
+      if (currentPage * itemsPerPage < data.length) {
+        currentPage++;
+        displayPage(currentPage);
+      }
+    }
+
+     // Функция перехода к предыдущей странице
+    function previousPage() {
+      if (currentPage > 1) {
+        currentPage--;
+        displayPage(currentPage);
+      }
+    }
+
+    // Функция сортировки таблицы
+    function sortTable(column) {
+      // Находим кнопку сортировки для выбранной колонки
+      const button = document.querySelector(`th:nth-child(${column + 1} ) .sort-button`);
+      // Проверяем текущее направление сортировки (возрастание или убывание) на основе атрибута 'data-asc'
+      const ascending = button.getAttribute('data-asc') === 'true';
+      // Сортируем данные в массиве 'data' в соответствии с выбранной колонкой и направлением сортировки
+      data.sort((a, b) => {
+         // Получаем значения для сравнения из выбранной колонки
+        const valueA = a[Object.keys(a)[column]];
+        const valueB = b[Object.keys(b)[column]];
+        // Используем 'localeCompare' для сравнения строк, учитывая текущее направление сортировки
+        return ascending ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+      });
+      displayPage(currentPage);
+      // Обновляем атрибут 'data-asc' и текст на кнопке сортировки для следующей сортировки
+      button.setAttribute('data-asc', ascending ? 'false' : 'true');
+      button.textContent = ascending ? '▼' : '▲';
+    }
+// Загрузка данных при загрузке страницы
+    loadData();
+  </script>
+</body>
+</html>

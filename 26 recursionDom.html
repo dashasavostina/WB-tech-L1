@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Рекурсивный обход DOM</title>
+</head>
+<body>
+  <div id="root">
+    <div>
+      <p>Пример</p>
+      <ul>
+        <li>Элемент 1</li>
+        <li>Элемент 2</li>
+      </ul>
+    </div>
+  </div>
+  
+  <script>
+    //  функция рекурсии, которая на вход принимает текущий узел и функцию, которая выполняется для каждого узла
+    function recursiveDOMTraversal(node, action) {
+      action(node);
+     // выполняется проверка, существуют ли у данного узла node дочерние узлы (свойство childNodes) 
+     // и есть ли у него хотя бы один дочерний узел.
+      if (node.childNodes && node.childNodes.length > 0) {
+        // перебираем массив дочерних узлов
+        for (let i = 0; i < node.childNodes.length; i++) {
+         // Внутри цикла вызывается функция recursiveDOMTraversal рекурсивно для каждого дочернего узла 
+         // node.childNodes[i]. Это означает, что обход DOM-дерева будет продолжаться в глубину до тех пор, 
+         // пока не будут достигнуты узлы без дочерних элементов, и на каждом узле будет вызвано 
+         // заданное действие action.
+          recursiveDOMTraversal(node.childNodes[i], action);
+        }
+      }
+    }
+// рекурсивный обход начнется с элемента id="root"
+    const rootElement = document.getElementById('root');
+    // вызов функции для корневого элемента и вызов колбэка для каждого дочернего узла
+    recursiveDOMTraversal(rootElement, (node) => {
+      // nodeType == 1 - означает, что это элемент HTML
+      if (node.nodeType === 1) {
+        // если верно, то выводим в консоль информацию о теге этого элемента
+        console.log(`Тег: ${node.tagName}`);
+      }
+    });
+  </script>
+</body>
+</html>

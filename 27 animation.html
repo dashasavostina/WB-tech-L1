@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* CSS для элемента, к которому добавляется анимация */
+        #animatedElement {
+            width: 100px;
+            height: 100px;
+            background-color: #3498db;
+            position: relative;
+            transition: width 0.5s ease, height 0.5s ease;
+        }
+    </style>
+</head>
+<body>
+    <div id="animatedElement" onclick="animateElement()">Нажми на меня</div>
+
+    <script>
+        // Функция для добавления анимации изменения размера элемента и текста
+        function animateElement() {
+            var element = document.getElementById("animatedElement");
+
+            // Увеличиваем размер элемента
+            element.style.width = "200px";
+            element.style.height = "200px";
+
+            // Изменяем текст элемента сразу после увеличения
+            element.innerHTML = "Следи за моим движением";
+
+            // Через 2 секунды возвращаем его к исходному размеру и тексту
+            setTimeout(function() {
+                element.style.width = "100px";
+                element.style.height = "100px";
+                element.innerHTML = "Нажми на меня";
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

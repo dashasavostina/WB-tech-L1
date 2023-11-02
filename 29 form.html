@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Стили для контейнера формы */
+        .myForm {
+            display: flex;
+            flex-direction: column;
+            max-width: 300px;
+        }
+
+        /* Стили для элементов формы */
+        label, input {
+            margin-bottom: 10px;
+        }
+
+        /* Стили для кнопки */
+        #submitButton {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        #submitButton:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <form class="myForm">
+        <label for="name">Имя:</label>
+        <input type="text" id="name" name="name" required>
+        
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        
+        <button type="submit" id="submitButton">Отправить</button>
+    </form>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Находим форму 
+            var form = document.querySelector(".myForm");
+
+            // Добавляем обработчик события на отправку формы
+            form.addEventListener("submit", function(event) {
+                event.preventDefault(); // Предотвращаем стандартное поведение формы (перезагрузку страницы)
+
+                // Получаем значения полей формы
+                var name = document.getElementById("name").value;
+                var email = document.getElementById("email").value;
+
+                // Создаем JSON объект
+                var formData = {
+                    name: name,
+                    email: email
+                };
+
+                // Преобразуем JSON объект в строку и выводим в консоль
+                var formDataJSON = JSON.stringify(formData);
+                console.log(formDataJSON);
+
+                // Вы можете выполнить здесь другие действия с данными, например, отправить их на сервер
+            });
+        });
+    </script>
+</body>
+</html>

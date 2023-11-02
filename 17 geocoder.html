@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Геокодирование адреса с Яндекс.Картами</title>
+    <style>
+      /* задаем стили */
+      ul#address-list {
+        list-style: none;
+        line-height: 1.5;
+      }
+      ul#address-list li:hover {
+        background-color: #f0f0f0;
+      }
+    </style>
+    <script
+      src="https://api-maps.yandex.ru/2.1/?apikey=8a7b5626-0d06-4e7d-954b-b1307a4155c1&lang=ru_RU"
+      type="text/javascript"
+    ></script>
+  </head>
+  <body>
+    <input type="text" id="address-input" placeholder="Введите адрес" />
+    <ul id="address-list"></ul>
+    <div id="map" style="width: 600px; height: 400px"></div>
+
+    <script>
+      // Этот код выполняется после загрузки библиотеки Яндекс.Карт и готовности к работе.
+      ymaps.ready(init);
+
+      function init() {
+        // Создание объекта карты. Задается центр карты и начальный уровень масштабирования.
+        let myMap = new ymaps.Map("map", {
+          center: [55.755814, 37.617635],
+          zoom: 10,
+        });
+
+        //  Определение функции debounce, которая используется для задержки выполнения функции до окончания активности
+        function debounce(func, delay) {
+          let timer;
+          return function () {
+            clearTimeout(timer);
+            const context = this;
+            const args = arguments;
+            timer = setTimeout(() => {
+              func.apply(context, args);
+            }, delay);
+          };
+        }
+
+        //  Определение функции throttle, которая используется для ограничения частоты вызовов
+        function throttle(func, limit) {
+          let inThrottle;
+          return function () {
+            const context = this;
+            const args = arguments;
+            if (!inThrottle) {
+              func.apply(context, args);
+              inThrottle = true;
+              setTimeout(() => (inThrottle = false), limit);
+            }
+          };
+        }
+
+        let addressInput = document.getElementById("address-input");
+        let addressList = document.getElementById("address-list");
+
+        // ставим ограничение на 0.5 сек
+        let debouncedGeocode = debounce(function (address) {
+          geocode(address);
+        }, 500);
+
+        let throttledGeocode = throttle(function (address) {
+          geocode(address);
+        }, 500);
+
+        // При вводе текста в поле ввода выполняется геокодирование с использованием обеих защит,
+        // как дебаунсинг, так и троттлинг.
+        addressInput.addEventListener("input", function () {
+          let address = addressInput.value;
+          if (address === "") {
+            addressList.innerHTML = ""; // Очищаем список, если инпут пустой
+            myMap.geoObjects.removeAll(); // Все метки на карте удаляются
+          } else {
+            debouncedGeocode(address);
+            throttledGeocode(address);
+          }
+        });
+
+        function geocode(address) {
+          ymaps.geocode(address).then(function (res) {
+            addressList.innerHTML = ""; // Очищаем список адресов
+            // перебираем геообъекты, полученные в результате геокодирования, используя метод .each.
+            res.geoObjects.each(function (geoObject) {
+              // создаем новый элемент списка <li>, который будет представлять адрес.
+              let listItem = document.createElement("li");
+              //извлекаем текстовое значение адреса из свойств геообъекта.
+              let text = geoObject.properties.get("text");
+              listItem.textContent = text;
+              //  навешиваем события при клике на адрес из списка
+              listItem.addEventListener("click", function () {
+                // перезаписываем значения инпута с вводом адреса
+                addressInput.value = text;
+                addressList.innerHTML = ""; // Очищаем список после выбора адреса
+                myMap.geoObjects.removeAll(); // Все метки на карте удаляются
+                myMap.geoObjects.add(geoObject); // Созданная метка для выбранного адреса добавляется на карту
+                myMap.setCenter(geoObject.geometry.getCoordinates()); // Карта центрируется на координатах выбранного адреса
+              });
+              listItem.addEventListener("mouseenter", function () {
+                listItem.style.cursor = "pointer"; // Ставим курсор в виде пальчика при наведении
+              });
+              listItem.addEventListener("mouseleave", function () {
+                listItem.style.cursor = "auto"; // Восстанавливаем обычный курсор при уходе с элемента
+              });
+              // Этот элемент списка адресов добавляется в родительский элемент списка addressList.
+              addressList.appendChild(listItem);
+            });
+          });
+        }
+      }
+    </script>
+  </body>
+</html>

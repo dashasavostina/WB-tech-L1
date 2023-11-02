@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Стили для контейнера сетки */
+        #gridContainer {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Автоматически подстраиваем столбцы */
+            grid-gap: 10px; /* Отступы между блоками */
+        }
+
+        /* Стили для элемента внутри шаблона */
+        .gridItem {
+            background-color: #3498db;
+            padding: 10px;
+        }
+
+        /* Стили для кнопки */
+        #addButton {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 10px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        #addButton:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <button id="addButton">Добавить элемент</button>
+    <div id="gridContainer"></div>
+    
+    <template id="myTemplate">
+        <div class="gridItem">
+            <h3>Новый элемент</h3>
+            <p>Это новый элемент, созданный из шаблона.</p>
+        </div>
+    </template>
+
+    <script>
+        // Функция для создания и добавления элемента из шаблона
+        function createAndAppendElement() {
+            // Получаем шаблон
+            var template = document.getElementById("myTemplate");
+
+            // Клонируем содержимое шаблона
+            var clone = template.content.cloneNode(true);
+
+            // Находим контейнер сетки и добавляем клон в него
+            var gridContainer = document.getElementById("gridContainer");
+            gridContainer.appendChild(clone);
+        }
+
+        // Добавляем обработчик события на кнопку
+        var addButton = document.getElementById("addButton");
+        addButton.addEventListener("click", createAndAppendElement);
+    </script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Пример использования localStorage</title>
+</head>
+<body>
+  <script>
+    // Создаем функцию для определения размера данных в localStorage в мегабайтах (MB).
+function sizeofAllStorageInMB() {
+  let sizeInBytes = 0; // Инициализируем переменную для хранения размера данных в байтах.
+  // Перебираем все ключи в localStorage.
+  for (i = 0; i <= localStorage.length - 1; i++) {
+    let key = localStorage.key(i); // Получаем ключ по индексу.
+    // Получаем размер данных по ключу и добавляем его к общему размеру.
+    sizeInBytes += lengthInUtf8Bytes(localStorage.getItem(key));
+  }
+  let sizeInKB = sizeInBytes / 1024; // Переводим размер из байт в килобайты.
+  let sizeInMB = sizeInKB / 1024; // Переводим размер из килобайт в мегабайты.
+  return sizeInMB; // Возвращаем размер данных в мегабайтах.
+}
+
+ // Создаем функцию для оценки размера строки в байтах, учитывая UTF-8 кодировку.
+function lengthInUtf8Bytes(str) {
+ // Находим символы UTF-8, которые не являются начальными символами в многобайтовой последовательности.
+  let m = encodeURIComponent(str).match(/%[89ABab]/g);
+  // Возвращаем размер строки в байтах, учитывая многобайтовую кодировку UTF-8.
+  return str.length + (m ? m.length : 0);
+}
+// Вызываем функцию для определения размера localStorage в мегабайтах, округляем результат до 
+// 2 знаков после запятой и выводим его с единицей измерения "MB".
+console.log(sizeofAllStorageInMB().toFixed(2) + " MB");
+
+  </script>
+</body>
+</html>
+
